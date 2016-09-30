@@ -1,0 +1,30 @@
+version: '2'
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - /usr/src/beyond/node_modules
+      - .:/usr/src/beyond
+    depends_on:
+      - postgres
+      - redis-session
+    # entrypoint: node
+    command: npm run start:dev
+    environment:
+      - FB_ID=$TRAVEL_FB_ID
+      - FB_SECRET=$TRAVEL_FB_SECRET
+      - SESSION_SECRET=$TRAVEL_SESSION_SECRET
+      - PORT=3000
+      - DEBUG=0
+  postgres:
+    image: postgres
+    volumes:
+      - ./docker:/docker-entrypoint-initdb.d
+    command: /docker-entrypoint.sh postgres
+  redis-session:
+    image: redis:alpine
+    volumes:
+      - ./docker/redis:/data
+    command: redis-server --appendonly yes
