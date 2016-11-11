@@ -15,6 +15,28 @@ function isAuth(req, res, next) {
 };
 
 function loadController(app) {
+  passport.use(new LocalStrategy(
+    function(username, password, done) {
+      console.log('local strategy called with username ', username);
+      User.findOne({ username: username })
+        .then(user => {
+          console.log('user from db ', user);
+          if (!user) {
+            console.error('user does not exist in the database');
+            done(null, false);
+          } else {
+            user.verifyPassword(password).then(verified => {
+              if (verified) {
+                done(null, user);
+              } else {
+                done(null, false);
+              }
+            });
+          }
+        });
+    }
+  ));
+
   passport.use(new FacebookStrategy({
     clientID: process.env.FB_ID || 'INVALID_FB_ID',
     clientSecret: process.env.FB_SECRET || 'INVALID_FB_SECRET',
@@ -47,6 +69,24 @@ function loadController(app) {
   });
 
   let routes = express.Router();
+  routes.post('/signup', (req, res) => {
+    //TODO: add db entry creation
+    console.log('server-side fetch to signup ', req.body);
+    User.findOrCreate({where: { username: req.body.username}})
+    .then(user => {
+      console.log('signup user ', user);
+      res.send('ok');
+    }).catch(err => {
+      console.error(err);
+    });
+  });
+  routes.post('/auth/local', passport.authenticate('local', { 
+    successRedirect : '/profile',
+    failureRedirect: '/' 
+  }));
+  routes.get('/profile', (req, res) => {
+    res.send('success');
+  });
   routes.get('/auth/status', isAuth, function(req, res) {
     res.json(req.user);
   });

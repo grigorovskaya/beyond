@@ -3,3 +3,4 @@ instructions.md
 docker/redis/
 *.map
 client/public/bundle.js
+apiKeys.js

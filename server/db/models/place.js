@@ -12,10 +12,10 @@ let Place = db.define('place', {
     type: Sequelize.STRING,
     allowNull: true
   },
-
-  location: {
+  //TODO: fix allowNull
+  address: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: true
   },
 
   lat: {
@@ -27,10 +27,10 @@ let Place = db.define('place', {
     type: Sequelize.FLOAT,
     allowNull: true
   },
-  
+  //TODO: fix allowNull and default
   fullDay: {
     type: Sequelize.BOOLEAN,
-    allowNull: false,
+    allowNull: true,
     defaultValue: false
   },
   

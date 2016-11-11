@@ -29,10 +29,73 @@ export default function reducer(state = initialState, action) {
   }
 }
 
-export function loginAttempt() {
+export function asyncSignupAttempt(userData) {
+  return function(dispatch) {
+    dispatch(loginAttempt(userData));
+    fetch("signup", {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    })
+      .then(res => res.text())
+      .then(dispatch(loginSuccess(userData)))
+      .catch(function(err) {
+        console.error(err);
+      });
+  }
+}
+
+export function loginAttempt(user) {
   return {
-    type: LOGIN_ATTEMPT
+    type: LOGIN_ATTEMPT,
+    user
   };
+}
+
+export function asyncFBLoginAttempt() {
+  return function(dispatch) {
+    dispatch(loginAttempt(null));
+    fetch('/auth/status', {credentials: 'same-origin'})
+      .then((response) => {
+        if(response.status !== 200) {
+          dispatch(loginFail('attempted login on load, failed'));
+        } else {
+          return response.json()
+            .then((user) => {
+              dispatch(loginSuccess(user));
+            }); 
+        }})
+    .catch((err) => {
+      dispatch(loginFail(err));
+      console.error(err);
+    });
+  return null;
+  }
+}
+
+export function asyncLocalLoginAttempt(userData) {
+  return function(dispatch) {    
+    dispatch(loginAttempt(userData));
+    fetch("auth/local", {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    })
+      .then(res => res.text())
+      .then(dispatch(loginSuccess(userData)))
+      .catch(function(err) {
+        console.error(err);
+      });
+      return null;
+  }
 }
 
 export function loginSuccess(user) {

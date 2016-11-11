@@ -1,15 +1,24 @@
 import React from 'react';
 import LoginLocal from './LoginLocal.jsx';
 import LoginFB from './LoginFB.jsx';
+import Signup from './Signup.jsx';
 
 export default class LoginPage extends React.Component {
   constructor(props) {
     super(props);
   }
 
+  attemptSignup(userData) {
+    this.props.onAsyncSignupAttempt(userData);
+  }
+
+  attemptLocalLogin(userData) {
+    this.props.onAsyncLocalLoginAttempt(userData);
+  }
+
   attemptFBLogin() {
-    this.props.onLoginAttempt();
     window.location = window.location.origin + "/auth/facebook";
+    this.props.onAsyncFBLoginAttempt();
   }
 
   logout() {
@@ -17,17 +26,12 @@ export default class LoginPage extends React.Component {
     window.location = window.location.origin + "/logout";
   }
 
-  attemptLocalLogin(event) {
-    event.preventDefault();
-    this.props.onLoginAttempt();
-    console.log('trying to log in');
-  }
-
   render() {
     return (
       <div>
-      <LoginLocal user={this.props.user} attemptLocalLogin={(e) => this.attemptLocalLogin(e)}/>
-      <LoginFB user={this.props.user} attemptFBLogin={() => this.attemptFBLogin()} logout={() => this.logout()}/>
+      <LoginLocal attemptLocalLogin={(data) => this.attemptLocalLogin(data)} />
+      <LoginFB user={this.props.user} attemptFBLogin={() => this.attemptFBLogin()} logout={() => this.logout()} />
+      <Signup attemptSignup={(data) => this.attemptSignup(data)} />
       </div>
       )
   }

@@ -11,8 +11,17 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = function(dispatch) {
   return {
-    onLoginAttempt: () => {
-      dispatch(actions.loginAttempt())
+    onAsyncSignupAttempt: (user) => {
+      dispatch(actions.asyncSignupAttempt(user))
+    },
+    onLoginAttempt: (user) => {
+      dispatch(actions.loginAttempt(user))
+    },
+    onAsyncFBLoginAttempt: () => {
+      dispatch(actions.asyncFBLoginAttempt())
+    },
+    onAsyncLocalLoginAttempt: (user) => {
+      dispatch(actions.asyncLocalLoginAttempt(user))
     },
     onLoginSuccess: (user) => {
       dispatch(actions.loginSuccess(user))
